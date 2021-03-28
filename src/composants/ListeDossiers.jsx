@@ -2,10 +2,19 @@ import './ListeDossiers.scss';
 import Dossier from './Dossier';
 import * as crudDossiers from '../services/crud-dossiers';
 import { useState, useEffect } from 'react';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import React from 'react';
 
 export default function ListeDossiers({utilisateur, etatDossiers}) {
   // État des dossiers (vient du composant Appli)
   const [dossiers, setDossiers] = etatDossiers;
+  const [tri, setTri] = useState('nom');
+  const handleChange = (event) => {
+    setTri(event.target.value);
+  };
 
   // Lire les dossiers dans Firestore et forcer le réaffichage du composant
   // Remarquez que ce code est dans un useEffect() car on veut l'exécuter 
@@ -34,9 +43,23 @@ export default function ListeDossiers({utilisateur, etatDossiers}) {
         setDossiers(dossiersRestants); // Muter l'état pour forcer le réaffichage du composant
       }).catch(erreur => console.log('Échec de la suppression - Firestore a répondu :', erreur.message));
   }
-  
+
   return (
     <>
+    <FormControl style={{margin: "10px", minWidth: "160px"}}>
+        <InputLabel>Tri des dossiers</InputLabel>
+        <Select
+          labelId="selectTri"
+          id="selectTri"
+          value={tri}
+          defaultValue={'"datemodif", "desc"'}
+          onChange={handleChange}
+        >
+          <MenuItem value={'"datemodif", "desc"'}>Date de modification descendante</MenuItem>
+          <MenuItem value={''}>Nom de dossier alphabétique ascendant</MenuItem>
+          <MenuItem value={''}>Nom de dossier alphabétique descendant</MenuItem>
+        </Select>
+      </FormControl>
     <ul className="ListeDossiers">
       {
         (dossiers.length > 0) ?
